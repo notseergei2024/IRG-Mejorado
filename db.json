@@ -1,0 +1,24 @@
+{
+  "users": [
+    {
+      "email": "jsergiovargas24@gmail.com",
+      "password": "123"
+    },
+    {
+      "email": "PEPE@4",
+      "password": "PEPE"
+    },
+    {
+      "email": "salvadorigoberto@gmail.com",
+      "password": "123"
+    },
+    {
+      "email": "PEPE@3",
+      "password": "PEPE"
+    },
+    {
+      "email": "JUAN@3",
+      "password": "JUAN"
+    }
+  ]
+}
