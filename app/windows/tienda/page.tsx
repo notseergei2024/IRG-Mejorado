@@ -19,6 +19,7 @@ interface Comic {
   autor: string;
   dibujante: string;
   año?: number;
+  imagen?: string;
   portadas: Portada[];
   fechaAgregado: string;
 }
