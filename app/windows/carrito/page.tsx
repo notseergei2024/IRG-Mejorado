@@ -1,112 +1,177 @@
 "use client";
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
-interface Producto {
-  id: number;
-  titulo: string;
-  precio: number;
-  descripcion: string;
-  imagen?: string;
+interface Coleccion {
+  id: string;
+  nombre: string;
+  descripcion?: string;
+  comics: any[];
+  fechaCreacion: string;
 }
 
-export default function CarritoPage() {
-  const [carrito, setCarrito] = useState<Producto[]>([]);
-  const [total, setTotal] = useState(0);
+export default function PerfilPage() {
+  const [user, setUser] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [stats, setStats] = useState({
+    colecciones: 0,
+    totalComics: 0,
+    totalVariantes: 0,
+    comicsConImagen: 0
+  });
+  const router = useRouter();
 
   useEffect(() => {
-    const carritoGuardado = JSON.parse(localStorage.getItem('carrito') || '[]');
-    setCarrito(carritoGuardado);
-    const precioTotal = carritoGuardado.reduce((sum: number, prod: Producto) => sum + prod.precio, 0);
-    setTotal(precioTotal);
+    const loggedUser = localStorage.getItem('user');
+    if (!loggedUser) {
+      router.push('/Registroylogin/newlogin');
+      return;
+    }
+    
+    setUser(loggedUser);
+    
+    const colecciones: Coleccion[] = JSON.parse(localStorage.getItem('colecciones') || '[]');
+    
+    let totalComics = 0;
+    let totalVariantes = 0;
+    let comicsConImagen = 0;
+
+    colecciones.forEach(col => {
+      col.comics.forEach(comic => {
+        totalComics++;
+        totalVariantes += comic.portadas?.length || 0;
+        if (comic.imagen) comicsConImagen++;
+        comic.portadas?.forEach((p: any) => {
+          if (p.imagen) comicsConImagen++;
+        });
+      });
+    });
+
+    setStats({
+      colecciones: colecciones.length,
+      totalComics,
+      totalVariantes,
+      comicsConImagen
+    });
+    
     setIsLoading(false);
-  }, []);
-
-  const eliminarDelCarrito = (index: number) => {
-    const nuevoCarrito = carrito.filter((_, i) => i !== index);
-    setCarrito(nuevoCarrito);
-    localStorage.setItem('carrito', JSON.stringify(nuevoCarrito));
-    const nuevoTotal = nuevoCarrito.reduce((sum, prod) => sum + prod.precio, 0);
-    setTotal(nuevoTotal);
-  };
-
-  const vaciarCarrito = () => {
-    setCarrito([]);
-    setTotal(0);
-    localStorage.removeItem('carrito');
-    alert('Carrito vaciado');
-  };
-
-  const realizarCompra = () => {
-    alert(`¡Compra realizada! Total: $${total}`);
-    vaciarCarrito();
-  };
+  }, [router]);
 
   if (isLoading) return null;
 
+  const limpiarDatos = () => {
+    if (confirm('¿Estás seguro de que quieres eliminar TODAS las colecciones y comics? Esta acción no se puede deshacer.')) {
+      localStorage.removeItem('colecciones');
+      setStats({
+        colecciones: 0,
+        totalComics: 0,
+        totalVariantes: 0,
+        comicsConImagen: 0
+      });
+      alert('✅ Todos los datos han sido eliminados');
+    }
+  };
+
   return (
-    <div className="max-w-6xl mx-auto">
-      <h2 className="text-3xl font-extrabold mb-8 text-gray-800">🛒 Tu Carrito</h2>
-      
-      {carrito.length === 0 ? (
-        <div className="text-center py-12">
-          <p className="text-gray-500 text-xl mb-4">Tu carrito está vacío</p>
+    <div className="min-h-screen bg-gradient-gaming py-12 px-4">
+      <div className="max-w-2xl mx-auto">
+        {/* Header */}
+        <div className="mb-12">
+          <h1 className="text-4xl font-black gradient-text mb-4">👤 MI PERFIL</h1>
           <Link 
             href="/windows/tienda" 
-            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded transition inline-block"
+            className="text-gaming-cyan hover:text-gaming-purple transition font-semibold"
           >
-            Volver a la Tienda
+            ← Volver a mis colecciones
           </Link>
         </div>
-      ) : (
-        <>
-          <div className="grid gap-4 mb-8">
-            {carrito.map((prod, index) => (
-              <div 
-                key={index} 
-                className="bg-white rounded-lg shadow p-4 flex justify-between items-center border border-gray-200"
-              >
-                <div className="flex-grow">
-                  <h3 className="font-bold text-lg">{prod.titulo}</h3>
-                  <p className="text-gray-600">{prod.descripcion}</p>
-                </div>
-                <div className="flex items-center gap-6">
-                  <p className="text-2xl font-bold text-blue-600">${prod.precio}</p>
-                  <button 
-                    onClick={() => eliminarDelCarrito(index)}
-                    className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition"
-                  >
-                    Eliminar
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
 
-          <div className="bg-white rounded-lg shadow p-6 border border-gray-200">
-            <div className="text-right mb-6">
-              <p className="text-gray-600 text-lg mb-2">Subtotal: ${total}</p>
-              <p className="text-gray-600 text-lg mb-2">Envío: $0</p>
-              <h3 className="text-3xl font-bold text-blue-600">Total: ${total}</h3>
+        {/* Información del usuario */}
+        <div className="card-gaming p-8 mb-8">
+          <h2 className="text-2xl font-bold text-gaming-cyan mb-6">Información de la Cuenta</h2>
+          <div className="space-y-4">
+            <div>
+              <p className="text-gaming-muted text-sm">Email/Usuario:</p>
+              <p className="text-gaming-text text-lg font-semibold">{user}</p>
             </div>
-            <div className="flex gap-4 justify-end">
-              <button 
-                onClick={vaciarCarrito}
-                className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-8 rounded transition"
-              >
-                Vaciar Carrito
-              </button>
-              <button 
-                onClick={realizarCompra}
-                className="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded transition"
-              >
-                Comprar Ahora
-              </button>
+            <div>
+              <p className="text-gaming-muted text-sm">Cuenta creada:</p>
+              <p className="text-gaming-text text-lg font-semibold">2026</p>
             </div>
           </div>
-        </>
-      )}
+        </div>
+
+        {/* Estadísticas */}
+        <div className="card-gaming p-8 mb-8">
+          <h2 className="text-2xl font-bold text-gaming-cyan mb-6">📊 Estadísticas de tu Biblioteca</h2>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-gaming-dark/50 p-4 rounded-lg border border-gaming-purple/30">
+              <p className="text-gaming-muted text-sm mb-2">Colecciones</p>
+              <p className="text-4xl font-black text-gaming-purple">{stats.colecciones}</p>
+            </div>
+            <div className="bg-gaming-dark/50 p-4 rounded-lg border border-gaming-cyan/30">
+              <p className="text-gaming-muted text-sm mb-2">Cómics</p>
+              <p className="text-4xl font-black text-gaming-cyan">{stats.totalComics}</p>
+            </div>
+            <div className="bg-gaming-dark/50 p-4 rounded-lg border border-gaming-green/30">
+              <p className="text-gaming-muted text-sm mb-2">Variantes</p>
+              <p className="text-4xl font-black text-gaming-green">{stats.totalVariantes}</p>
+            </div>
+            <div className="bg-gaming-dark/50 p-4 rounded-lg border border-gaming-pink/30">
+              <p className="text-gaming-muted text-sm mb-2">Con imagen</p>
+              <p className="text-4xl font-black text-gaming-pink">{stats.comicsConImagen}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Información al usuario */}
+        <div className="card-gaming p-8 mb-8 border-gaming-cyan/30">
+          <h2 className="text-xl font-bold text-gaming-cyan mb-4">💾 Dónde se guardan tus datos</h2>
+          <div className="space-y-4 text-gaming-muted text-sm">
+            <p>
+              📍 <span className="text-gaming-text font-semibold">localStorage del navegador</span>
+            </p>
+            <p>
+              🔑 Clave: <span className="text-gaming-cyan font-mono">colecciones</span>
+            </p>
+            <div className="bg-gaming-dark/50 p-4 rounded border border-gaming-cyan/20 mt-4">
+              <p className="text-gaming-text mb-2">Estructura guardada:</p>
+              <pre className="text-xs overflow-auto max-h-32 text-gaming-purple">
+{`localStorage["colecciones"] = [
+  {
+    id, nombre, descripcion,
+    comics: [
+      {
+        id, numero, titulo, autor,
+        dibujante, año,
+        portadas: [...]
+      }
+    ]
+  }
+]`}
+              </pre>
+            </div>
+            <p className="mt-4">
+              ⚠️ Los datos se pierden si limpias el caché del navegador
+            </p>
+          </div>
+        </div>
+
+        {/* Acciones peligrosas */}
+        <div className="card-gaming p-8 border-gaming-orange/50">
+          <h2 className="text-2xl font-bold text-gaming-orange mb-6">🚨 Zona de Peligro</h2>
+          <button 
+            onClick={limpiarDatos}
+            className="w-full px-6 py-3 bg-gaming-orange/20 text-gaming-orange hover:bg-gaming-orange/30 font-bold rounded-lg transition"
+          >
+            🗑️ Eliminar todas las colecciones
+          </button>
+          <p className="text-gaming-muted text-sm mt-3">
+            ⚠️ Esta acción eliminará permanentemente todas tus colecciones, cómics y variantes. No se puede deshacer.
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

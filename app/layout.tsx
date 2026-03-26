@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Mi Tienda Virtual",
-  description: "Tienda creada con Next.js",
+  title: "Mi Colección de Comics",
+  description: "App para gestionar tu colección de comics",
 };
 
 export default function RootLayout({
@@ -13,7 +13,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
-      <body>
+      <body className="bg-gaming-darker text-gaming-text min-h-screen">
         {children}
       </body>
     </html>

@@ -32,50 +32,40 @@ export default function WindowsLayout({
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col text-black">
-      <header className="bg-blue-600 text-white p-4 shadow-lg">
-        <div className="max-w-6xl mx-auto flex justify-between items-center">
-          <Link href="/windows/tienda" className="text-2xl font-bold hover:opacity-80">
-             Mi Tienda
+    <div className="min-h-screen bg-gradient-gaming flex flex-col">
+      {/* Header */}
+      <header className="bg-gaming-dark/80 backdrop-blur border-b border-gaming-cyan/20 shadow-2xl sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+          {/* Logo */}
+          <Link href="/windows/tienda" className="text-3xl font-black gradient-text hover:opacity-80 transition">
+            📚 MIS COMICS
           </Link>
-          <nav className="flex gap-6 items-center">
-            <Link 
-              href="/windows/tienda" 
-              className="hover:text-blue-200 transition font-semibold"
-            >
-              Tienda
-            </Link>
-            <Link 
-              href="/windows/carrito" 
-              className="hover:text-blue-200 transition font-semibold"
-            >
-               Carrito
-            </Link>
-            <Link 
-              href="/windows/contacto" 
-              className="hover:text-blue-200 transition font-semibold"
-            >
-               Contacto
-            </Link>
-            <span className="text-sm border-l pl-6 border-blue-400">
-               {user || 'Usuario'}
+          
+          {/* User Info */}
+          <div className="flex items-center gap-4">
+            <span className="text-gaming-cyan font-semibold text-sm">
+              👤 {user || 'Usuario'}
             </span>
             <button 
               onClick={handleLogout}
-              className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded transition font-semibold"
+              className="px-4 py-2 bg-gaming-orange hover:brightness-90 text-white font-bold rounded transition"
             >
-              Logout
+              🚪 Salir
             </button>
-          </nav>
+          </div>
         </div>
       </header>
-      <main className="flex-grow p-6">
-        <div className="max-w-6xl mx-auto">
-          {children}
-        </div>
+      
+      {/* Main content */}
+      <main className="flex-grow">
+        {children}
       </main>
-      <footer className="bg-gray-800 text-white p-4 text-center">
-        <p>&copy; 2026 Mi Tienda Virtual. Todos los derechos reservados.</p>
+      
+      {/* Footer */}
+      <footer className="bg-gaming-dark/90 border-t border-gaming-cyan/20 text-gaming-muted p-6 mt-12 text-center">
+        <p className="text-sm">
+          © 2026 <span className="text-gaming-cyan font-bold">Mi Colección de Comics</span> • Gestiona tu biblioteca
+        </p>
       </footer>
     </div>
   );

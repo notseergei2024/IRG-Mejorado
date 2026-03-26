@@ -19,6 +19,10 @@
     {
       "email": "JUAN@3",
       "password": "JUAN"
+    },
+    {
+      "email": "ee@ee",
+      "password": "ee"
     }
   ]
 }

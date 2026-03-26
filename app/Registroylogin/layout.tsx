@@ -23,19 +23,18 @@ export default function AuthLayout({
   if (isLoading) return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 to-blue-800 flex flex-col">
-      <header className="bg-blue-900 text-white p-4 shadow-lg">
+    <div className="min-h-screen bg-gradient-gaming flex flex-col">
+      <header className="bg-gaming-dark/80 backdrop-blur border-b border-gaming-cyan/20 p-4 shadow-lg">
         <div className="max-w-6xl mx-auto">
-          <Link href="/" className="text-2xl font-bold hover:opacity-80">
-            🚀 Mi Tienda
+          <Link href="/" className="text-2xl font-black gradient-text hover:opacity-80 transition">
+            📚 MI COLECCIÓN DE COMICS
           </Link>
         </div>
       </header>
       <main className="flex-grow flex items-center justify-center p-6">
-        <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md">
-          {children}
-        </div>
+        {children}
       </main>
     </div>
   );
 }
+
